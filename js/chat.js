@@ -3,7 +3,7 @@
  * Implementación final con seguridad por roles.
  */
 
-const GEMINI_API_KEY = CONFIG.GEMINI_API_KEY;
+// Gemini se maneja ahora a través del Proxy de Vercel (/api/chat)
 
 function toggleChat() {
     const chatWindow = document.getElementById('chatWindow');
