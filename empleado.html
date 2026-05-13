@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Empleado - Portal Corporativo</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <span class="logo-small">🏢</span> Portal Empleados
+        </div>
+        <div class="nav-user">
+            <div class="user-info">
+                <span id="userNameDisplay" class="user-name">Cargando...</span>
+                <span class="badge badge-empleado">Empleado</span>
+            </div>
+            <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="dashboard-grid">
+            <div class="card welcome-card">
+                <h2>¡Bienvenido a tu panel de control!</h2>
+                <p>Has iniciado sesión correctamente con el rol de <strong>Empleado</strong>.</p>
+                <p class="text-muted">En esta área podrás gestionar tus tareas, revisar comunicados y acceder a los recursos de la empresa.</p>
+                <button class="btn btn-primary mt-4">Ver mis tareas</button>
+            </div>
+            
+            <div class="card stat-card">
+                <h3>Comunicados Recientes</h3>
+                <ul class="notification-list">
+                    <li>
+                        <span class="date">Hoy</span>
+                        <p>Actualización de políticas de seguridad.</p>
+                    </li>
+                    <li>
+                        <span class="date">Ayer</span>
+                        <p>Mantenimiento programado del sistema ERP.</p>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth('Empleado');
+        });
+    </script>
+</body>
+</html>

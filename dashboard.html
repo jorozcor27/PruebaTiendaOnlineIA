@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - La Ultima Maravilla</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Lexend:wght@700;800&display=swap" rel="stylesheet">
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Chart.js SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Botón de apertura del Menú Admin -->
+    <button id="sidebarToggle" class="sidebar-toggle" onclick="toggleSidebar()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+    </button>
+
+    <!-- Overlay del Sidebar -->
+    <div id="sidebarOverlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <!-- Menú Lateral de Administración (Sidebar) -->
+    <aside id="adminSidebar" class="admin-sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                MONOLITH <br> <span style="font-size: 12px; opacity: 0.6;">DASHBOARD</span>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <ul>
+                <li>
+                    <a href="dashboard.html" class="sidebar-link active">
+                        <span>🏠</span> Inicio Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="usuarios.html" class="sidebar-link">
+                        <span>👥</span> Gestión Usuarios
+                    </a>
+                </li>
+                <li>
+                    <a href="productos_admin.html" class="sidebar-link">
+                        <span>📦</span> Gestión Productos
+                    </a>
+                </li>
+				 <li>
+                    <a href="Tienda.html" class="sidebar-link">
+                        <span>🏠</span> Home
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="sidebar-user-info">
+                <span id="sidebarUserName" class="sidebar-user-name">Usuario Admin</span>
+                <span id="sidebarUserRole" class="sidebar-user-role">Administrador</span>
+            </div>
+            <a href="javascript:void(0)" class="sidebar-link" onclick="logout()" style="color: var(--error); border-top: 1px solid rgba(255,255,255,0.1); margin-top: 16px;">
+                <span>🚪</span> Cerrar Sesión
+            </a>
+        </div>
+    </aside>
+
+    <div class="container" style="padding-top: 64px; padding-bottom: 128px;">
+        <header style="margin-bottom: 64px;">
+            <h1 style="font-size: 48px; margin-bottom: 12px;">OPERACIONES</h1>
+            <p style="color: var(--on-surface-variant); font-size: 18px;">Centro de control técnico y métricas de rendimiento.</p>
+        </header>
+
+        <!-- Tarjetas de Estadísticas -->
+        <div class="stats-grid">
+            <div class="stat-card fade-in">
+                <span class="stat-label">Usuarios Totales</span>
+                <span id="totalUsers" class="stat-value">0</span>
+                <span class="stat-trend trend-up">↑ 12% vs mes anterior</span>
+            </div>
+            <div class="stat-card fade-in" style="animation-delay: 0.1s;">
+                <span class="stat-label">Ventas Totales</span>
+                <span id="totalSales" class="stat-value">$0.00</span>
+                <span class="stat-trend trend-up">↑ 8.4% vs mes anterior</span>
+            </div>
+            <div class="stat-card fade-in" style="animation-delay: 0.2s;">
+                <span class="stat-label">Pedidos Activos</span>
+                <span id="activeOrders" class="stat-value">0</span>
+                <span class="stat-trend">Estable</span>
+            </div>
+            <div class="stat-card fade-in" style="animation-delay: 0.3s;">
+                <span class="stat-label">Productos en Stock</span>
+                <span id="totalProducts" class="stat-value">0</span>
+                <span class="stat-trend trend-down">↓ 3 items críticos</span>
+            </div>
+        </div>
+
+        <!-- Gráficas -->
+        <div class="dashboard-charts">
+            <div class="chart-card fade-in" style="animation-delay: 0.4s;">
+                <h3>Ventas por Categoría</h3>
+                <div class="chart-container">
+                    <canvas id="salesByCategoryChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card fade-in" style="animation-delay: 0.5s;">
+                <h3>Volumen de Pedidos (Mensual)</h3>
+                <div class="chart-container">
+                    <canvas id="ordersTrendChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabla de Pedidos Recientes -->
+        <div class="card fade-in" style="animation-delay: 0.6s;">
+            <div class="card-header">
+                <h2>Pedidos Recientes</h2>
+                <button class="btn btn-secondary btn-sm" onclick="location.reload()">Sincronizar</button>
+            </div>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID Pedido</th>
+                            <th>Cliente</th>
+                            <th>Fecha</th>
+                            <th>Total</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recentOrdersTable">
+                        <!-- Cargado dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Productos - Performance Monolith</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Lexend:wght@700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <!-- Botón de apertura del Menú Admin (Solo visible para Admins) -->
+    <button id="sidebarToggle" class="sidebar-toggle" onclick="toggleSidebar()">
+        ☰
+    </button>
+
+    <!-- Overlay del Sidebar -->
+    <div id="sidebarOverlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <!-- Menú Lateral de Administración (Sidebar) -->
+    <aside id="adminSidebar" class="admin-sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                MONOLITH <br> <span style="font-size: 12px; opacity: 0.6;">DASHBOARD</span>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <ul>
+                <li>
+                    <a href="dashboard.html" class="sidebar-link">
+                        <span>🏠</span> Inicio Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="usuarios.html" class="sidebar-link">
+                        <span>👥</span> Gestión Usuarios
+                    </a>
+                </li>
+                <li>
+                    <a href="productos_admin.html" class="sidebar-link active">
+                        <span>📦</span> Gestión Productos
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="sidebar-user-info">
+                <span id="sidebarUserName" class="sidebar-user-name">Usuario Admin</span>
+                <span id="sidebarUserRole" class="sidebar-user-role">Administrador</span>
+            </div>
+            <a href="javascript:void(0)" class="sidebar-link" onclick="logout()" style="color: var(--error); border-top: 1px solid rgba(255,255,255,0.1); margin-top: 16px;">
+                <span>🚪</span> Cerrar Sesión
+            </a>
+        </div>
+    </aside>
+
+    <div class="container" style="padding-top: 64px; padding-bottom: 128px;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 48px;">
+            <div>
+                <h1 style="font-size: 32px; margin-bottom: 8px;">Inventario de Equipo</h1>
+                <p style="color: var(--on-surface-variant); font-family: var(--font-body);">Gestión centralizada de productos y especificaciones técnicas.</p>
+            </div>
+            <button class="btn btn-primary" onclick="openModal()" style="width: auto; padding: 16px 32px;">+ Nuevo Producto</button>
+        </div>
+
+        <div class="card" style="border: 1px solid var(--outline-variant); padding: 0;">
+            <div class="table-responsive">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead style="background-color: var(--surface); border-bottom: 1px solid var(--outline-variant);">
+                        <tr>
+                            <th style="text-align: left; padding: 24px; font-family: var(--font-heading); font-size: 12px; letter-spacing: 0.1em; color: var(--on-surface-variant);">IMAGEN</th>
+                            <th style="text-align: left; padding: 24px; font-family: var(--font-heading); font-size: 12px; letter-spacing: 0.1em; color: var(--on-surface-variant);">PRODUCTO</th>
+                            <th style="text-align: left; padding: 24px; font-family: var(--font-heading); font-size: 12px; letter-spacing: 0.1em; color: var(--on-surface-variant);">CATEGORÍA</th>
+                            <th style="text-align: left; padding: 24px; font-family: var(--font-heading); font-size: 12px; letter-spacing: 0.1em; color: var(--on-surface-variant);">STOCK</th>
+                            <th style="text-align: left; padding: 24px; font-family: var(--font-heading); font-size: 12px; letter-spacing: 0.1em; color: var(--on-surface-variant);">PRECIO</th>
+                            <th style="text-align: right; padding: 24px; font-family: var(--font-heading); font-size: 12px; letter-spacing: 0.1em; color: var(--on-surface-variant);">ACCIONES</th>
+                        </tr>
+                    </thead>
+                    <tbody id="productosTableBody">
+                        <!-- Cargado dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Crear/Editar -->
+    <div class="modal-overlay" id="productModal">
+        <div class="modal" style="max-width: 600px; padding: 48px; border: 1px solid var(--primary);">
+            <div class="modal-header" style="border:none; padding: 0; margin-bottom: 32px; display: flex; justify-content: space-between; align-items: center;">
+                <h2 class="modal-title" id="modalTitle" style="font-size: 24px; font-family: var(--font-heading);">NUEVO PRODUCTO</h2>
+                <button onclick="closeModal()" style="background:transparent; border:none; font-size: 24px; cursor:pointer;">&times;</button>
+            </div>
+            <form id="productForm">
+                <input type="hidden" id="productId">
+                
+                <div class="form-group">
+                    <label for="nombre">Nombre del Producto</label>
+                    <input type="text" id="nombre" class="form-control" placeholder="Ej. Pesas Rusas 16kg" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="descripcion">Descripción Técnica</label>
+                    <textarea id="descripcion" class="form-control" rows="3" placeholder="Especificaciones, material, peso..."></textarea>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                    <div class="form-group">
+                        <label for="precio">Precio ($)</label>
+                        <input type="number" id="precio" class="form-control" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="stock">Stock Disponible</label>
+                        <input type="number" id="stock" class="form-control" min="0" value="0" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="categoria_id">Categoría</label>
+                    <select id="categoria_id" class="form-select" required>
+                        <!-- Opciones cargadas dinámicamente -->
+                    </select>
+                </div>
+
+                <div class="form-group" style="margin-top: 16px; border: 1px solid var(--outline-variant); padding: 24px;">
+                    <label style="margin-bottom: 16px; display: block;">Imagen del Producto</label>
+                    
+                    <div style="display: flex; gap: 16px; margin-bottom: 16px;">
+                        <button type="button" id="btnUploadLocal" class="filter-btn active" style="flex: 1; font-size: 11px;">Subir Archivo</button>
+                        <button type="button" id="btnPasteUrl" class="filter-btn" style="flex: 1; font-size: 11px;">Pegar URL</button>
+                    </div>
+
+                    <div id="uploadLocalGroup">
+                        <input type="file" id="imageFile" class="form-control" accept="image/*">
+                        <small class="help-text">JPG, PNG o WEBP. Máx 2MB.</small>
+                    </div>
+
+                    <div id="pasteUrlGroup" style="display: none;">
+                        <input type="url" id="imageUrl" class="form-control" placeholder="https://ejemplo.com/imagen.jpg">
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 16px; margin-top: 48px;">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()" style="flex: 1; border: 1px solid var(--outline);">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" style="flex: 2;">Guardar Producto</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script src="js/productos_admin.js"></script>
+</body>
+</html>

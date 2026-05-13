@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Usuarios - Admin</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <!-- Botón de apertura del Menú Admin (Solo visible para Admins) -->
+    <button id="sidebarToggle" class="sidebar-toggle" onclick="toggleSidebar()">
+        ☰
+    </button>
+
+    <!-- Overlay del Sidebar -->
+    <div id="sidebarOverlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <!-- Menú Lateral de Administración (Sidebar) -->
+    <aside id="adminSidebar" class="admin-sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                MONOLITH <br> <span style="font-size: 12px; opacity: 0.6;">DASHBOARD</span>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <ul>
+                <li>
+                    <a href="dashboard.html" class="sidebar-link">
+                        <span>🏠</span> Inicio Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="usuarios.html" class="sidebar-link active">
+                        <span>👥</span> Gestión Usuarios
+                    </a>
+                </li>
+                <li>
+                    <a href="productos_admin.html" class="sidebar-link">
+                        <span>📦</span> Gestión Productos
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="sidebar-user-info">
+                <span id="sidebarUserName" class="sidebar-user-name">Usuario Admin</span>
+                <span id="sidebarUserRole" class="sidebar-user-role">Administrador</span>
+            </div>
+            <a href="javascript:void(0)" class="sidebar-link" onclick="logout()" style="color: var(--error); border-top: 1px solid rgba(255,255,255,0.1); margin-top: 16px;">
+                <span>🚪</span> Cerrar Sesión
+            </a>
+        </div>
+    </aside>
+
+    <div class="container">
+        <div class="card fade-in">
+            <div class="card-header">
+                <div>
+                    <h2>Gestión de Usuarios</h2>
+                    <p class="text-muted">Administra los accesos y roles del sistema.</p>
+                </div>
+                <button class="btn btn-primary" onclick="openModal()">
+                    <span>+</span> Nuevo Usuario
+                </button>
+            </div>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nombre Completo</th>
+                            <th>Correo Electrónico</th>
+                            <th>Rol</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usuariosTableBody">
+                        <!-- Content dynamically loaded by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Create/Edit User -->
+    <div class="modal-overlay" id="userModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">Nuevo Usuario</h3>
+                <button class="close-modal" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="userForm">
+                    <input type="hidden" id="userId">
+                    <div class="form-group">
+                        <label for="nombre">Nombre Completo</label>
+                        <input type="text" id="nombre" class="form-control" placeholder="Ej. Ana García" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="userEmail">Correo Electrónico</label>
+                        <input type="email" id="userEmail" class="form-control" placeholder="ana@empresa.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="userPassword">Contraseña</label>
+                        <input type="password" id="userPassword" class="form-control" placeholder="••••••••">
+                        <small class="help-text" id="passwordHelp">Dejar en blanco para mantener la actual al editar.</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="rol">Rol del Sistema</label>
+                        <select id="rol" class="form-select" required>
+                            <option value="Admin">Administrador (Acceso total)</option>
+                            <option value="Empleado" selected>Empleado (Acceso limitado)</option>
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar Usuario</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth('Admin');
+            renderTable();
+        });
+    </script>
+</body>
+</html>

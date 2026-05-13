@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tienda Online - La Ultima Maravilla</title>
+    <!-- Importamos nuestros estilos -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Importamos el SDK de Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+    <!-- Botón de apertura del Menú Admin (Solo visible para Admins) -->
+    <button id="sidebarToggle" class="sidebar-toggle" onclick="toggleSidebar()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+    </button>
+
+    <!-- Overlay del Sidebar -->
+    <div id="sidebarOverlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <!-- Menú Lateral de Administración (Sidebar) -->
+    <aside id="adminSidebar" class="admin-sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                MONOLITH <br> <span style="font-size: 12px; opacity: 0.6;">DASHBOARD</span>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <ul>
+                <li>
+                    <a href="dashboard.html" class="sidebar-link">
+                        <span>🏠</span> Inicio Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="usuarios.html" class="sidebar-link">
+                        <span>👥</span> Gestión Usuarios
+                    </a>
+                </li>
+                <li>
+                    <a href="productos_admin.html" class="sidebar-link">
+                        <span>📦</span> Gestión Productos
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="sidebar-user-info">
+                <span id="sidebarUserName" class="sidebar-user-name">Usuario Admin</span>
+                <span id="sidebarUserRole" class="sidebar-user-role">Administrador</span>
+            </div>
+            <a href="javascript:void(0)" class="sidebar-link" onclick="logout()" style="color: var(--error); border-top: 1px solid rgba(255,255,255,0.1); margin-top: 16px;">
+                <span>🚪</span> Cerrar Sesión
+            </a>
+        </div>
+    </aside>
+
+
+    
+    <!-- Barra de Navegación Superior -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <span class="logo-small"></span> Tienda Online
+        </div>
+        <div class="nav-user">
+            <!-- Menú de Administración (Oculto por defecto, se muestra vía JS si es admin) -->
+            <div id="adminMenu" style="display: none; gap: 8px; margin-right: 15px;">
+                <a href="usuarios.html" class="btn btn-sm btn-warning"> Usuarios</a>
+                <a href="productos_admin.html" class="btn btn-sm btn-warning">Productos</a>
+            </div>
+
+            <!-- Saludo al usuario o botón de login (Manejado por JS) -->
+            <div class="user-info" id="userInfoContainer">
+                <span id="userNameDisplay" class="user-name">Invitado</span>
+            </div>
+
+            <!-- Botón del Carrito -->
+            <button class="btn btn-secondary" onclick="window.location.href='carrito.html'" style="position: relative;">
+                🛒 Carrito <span class="cart-badge" id="cartCount">0</span>
+            </button>
+
+            <!-- Botón de Login / Logout (Manejado por JS) -->
+            <button class="btn btn-primary btn-sm" id="authButton" onclick="window.location.href='login.html'">Iniciar
+                Sesión</button>
+        </div>
+    </nav>
+
+    <!-- Contenido Principal -->
+    <div class="container fade-in">
+        <div class="card-header" style="margin-bottom: 10px;">
+            <h2>Catálogo de Productos</h2>
+            <p class="text-muted">Explora nuestra selección y añade al carrito lo que más te guste.</p>
+        </div>
+
+        <!-- Buscador de Productos con Voz -->
+        <div class="search-section fade-in" style="animation-delay: 0.1s;">
+            <div class="search-input-wrapper">
+                <input type="text" id="searchInput" class="search-input" placeholder="Buscar por nombre, descripción...">
+                <button id="voiceSearchBtn" class="voice-btn" title="Buscar por voz">
+                    🎤
+                </button>
+            </div>
+            <button class="search-btn" onclick="ejecutarBusqueda()">Buscar</button>
+        </div>
+
+        <!-- Filtros de Categorías (Botones generados dinámicamente) -->
+        <div class="category-filters" id="categoryFilters">
+            <button class="filter-btn active" onclick="filtrarProductos(null)">Todas</button>
+            <!-- Las demás categorías se insertan aquí desde la base de datos -->
+        </div>
+
+        <!-- Grid donde se pintarán las tarjetas de los productos -->
+        <div class="products-grid" id="productsGrid">
+            <!-- Mensaje de carga mientras obtenemos los datos de Supabase -->
+            <p style="color: var(--text-muted);">Cargando productos...</p>
+        </div>
+    </div>
+
+    <!-- Chat Widget -->
+    <div id="chatWidget" class="chat-widget">
+        <button class="chat-toggle" onclick="toggleChat()">
+            💬
+        </button>
+        <div id="chatWindow" class="chat-window">
+            <div class="chat-header">
+                <h3>Asistente Virtual</h3>
+                <button onclick="toggleChat()" style="background:transparent; border:none; color:white; cursor:pointer;">✕</button>
+            </div>
+            <div id="chatMessages" class="chat-messages">
+                <div class="message message-ai">
+                    Hola. Soy el asistente de operaciones. ¿En qué puedo ayudarte hoy?
+                </div>
+            </div>
+            <div id="typingIndicator" class="typing-indicator">El asistente está analizando...</div>
+            <div class="chat-input-area">
+                <input type="text" id="chatInput" class="chat-input" placeholder="Escribe tu consulta...">
+                <button id="voiceChatBtn" class="voice-btn" style="padding: 0 10px;">🎤</button>
+                <button class="btn-send" onclick="sendMessage()">ENVIAR</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/chat.js"></script>
+    <script src="js/tienda.js"></script>
+</body>
+
+</html>
