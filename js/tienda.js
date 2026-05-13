@@ -313,19 +313,29 @@ function initVoiceRecognition(btnId, inputId, callback) {
     const btn = document.getElementById(btnId);
     const input = document.getElementById(inputId);
     
-    if (!('webkitSpeechRecognition' in window)) {
-        alert("Tu navegador no soporta reconocimiento de voz. Usa Chrome.");
+    // Compatibilidad multiplataforma
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+        alert("Tu navegador no soporta reconocimiento de voz. Te recomendamos usar Google Chrome.");
         return;
     }
 
-    const recognition = new webkitSpeechRecognition();
+    const recognition = new SpeechRecognition();
     recognition.lang = 'es-ES';
     recognition.continuous = false;
     recognition.interimResults = false;
 
     btn.addEventListener('click', () => {
-        recognition.start();
-        btn.classList.add('recording');
+        try {
+            recognition.start();
+            btn.classList.add('recording');
+            console.log("Micrófono activado...");
+        } catch (e) {
+            console.error("Error al iniciar reconocimiento:", e);
+            // A veces el reconocimiento ya está corriendo
+            recognition.stop();
+        }
     });
 
     recognition.onresult = (event) => {
@@ -335,9 +345,15 @@ function initVoiceRecognition(btnId, inputId, callback) {
         if (callback) callback(text);
     };
 
-    recognition.onerror = () => {
+    recognition.onerror = (event) => {
         btn.classList.remove('recording');
-        console.error("Error en reconocimiento de voz");
+        console.error("Error en reconocimiento de voz:", event.error);
+        
+        if (event.error === 'not-allowed') {
+            alert("Acceso al micrófono denegado. Por favor, activa los permisos en tu navegador.");
+        } else if (event.error === 'network') {
+            alert("Error de red. El reconocimiento de voz requiere conexión a internet.");
+        }
     };
 
     recognition.onend = () => {

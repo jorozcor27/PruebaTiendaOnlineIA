@@ -1423,12 +1423,12 @@ body.sidebar-open {
 
     /* Botones de Navegación */
     .btn-sm {
-        padding: 8px 12px;
-        font-size: 11px;
+        padding: 10px 16px;
+        font-size: 12px;
     }
 
     #authButton {
-        display: none; /* Ocultamos el texto largo del login */
+        display: inline-flex; /* Lo mostramos de nuevo */
     }
 
     /* Grid de Productos - 1 columna en móviles pequeños, 2 en medianos */
