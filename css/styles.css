@@ -1389,8 +1389,138 @@ body.sidebar-open {
     position: relative;
 }
 
-@media (max-width: 600px) {
+/* ==========================================================================
+   SISTEMA RESPONSIVO - OPTIMIZACIÓN MÓVIL
+   ========================================================================== */
+
+@media (max-width: 992px) {
     .dashboard-charts {
         grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    /* Contenedor General */
+    .container {
+        padding: 16px;
+        margin-top: 80px;
+    }
+
+    /* Navbar Móvil */
+    .navbar {
+        padding: 0 16px;
+        height: 70px;
+    }
+
+    .nav-brand {
+        font-size: 14px;
+        padding-left: 0;
+    }
+
+    .nav-user {
+        gap: 8px;
+    }
+
+    /* Botones de Navegación */
+    .btn-sm {
+        padding: 8px 12px;
+        font-size: 11px;
+    }
+
+    #authButton {
+        display: none; /* Ocultamos el texto largo del login */
+    }
+
+    /* Grid de Productos - 1 columna en móviles pequeños, 2 en medianos */
+    .products-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    /* Tarjetas de Producto */
+    .product-card {
+        padding: 16px;
+    }
+
+    .product-image {
+        height: 180px;
+    }
+
+    /* Secciones de Búsqueda y Filtros */
+    .search-section {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .search-input-wrapper {
+        width: 100%;
+    }
+
+    .category-filters {
+        overflow-x: auto;
+        padding-bottom: 8px;
+        justify-content: flex-start;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .filter-btn {
+        flex-shrink: 0;
+        white-space: nowrap;
+    }
+
+    /* Chat Widget en Móvil */
+    .chat-window {
+        width: calc(100vw - 32px);
+        right: 16px;
+        bottom: 80px;
+        height: 60vh;
+    }
+
+    /* Dashboard & Admin */
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    /* Tablas Responsivas */
+    .table-container {
+        overflow-x: auto;
+    }
+
+    table {
+        font-size: 13px;
+    }
+
+    th, td {
+        padding: 12px 8px;
+    }
+
+    /* Sidebar Toggle - Siempre visible en móvil si es admin */
+    .sidebar-toggle {
+        width: 44px;
+        height: 44px;
+        left: 10px;
+        top: 13px;
+    }
+}
+
+@media (max-width: 480px) {
+    .nav-brand {
+        display: none; /* Ocultamos logo texto en móviles muy pequeños */
+    }
+    
+    .product-title {
+        font-size: 16px;
+    }
+
+    .chat-toggle {
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
     }
 }
