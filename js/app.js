@@ -49,7 +49,7 @@ if (loginForm) {
 
             // 3. Redirección
             // Todos los usuarios (Admin, Empleado, Cliente) entran directo a la tienda
-            window.location.href = 'tienda.html';
+            window.location.href = 'index.html';
         } catch (error) {
             console.error('Error de autenticación:', error.message);
             errorDiv.style.display = 'block';
@@ -161,7 +161,7 @@ async function checkAuth(requiredRole) {
 
         // Si se requiere admin y el usuario no lo es, o viceversa, se muestra el modal de restricción.
         if (isAdminRequired && !isUserAdmin) {
-            showRestrictedModal('tienda.html');
+            showRestrictedModal('index.html');
             return null;
         } else if (!isAdminRequired && isUserAdmin) {
             showRestrictedModal('usuarios.html');

@@ -29,7 +29,7 @@ function renderizarCarrito() {
         listContainer.innerHTML = `
             <div style="text-align: center; padding: 64px; border: 1px dashed var(--outline); background: rgba(0,0,0,0.02);">
                 <p style="font-size: 18px; color: var(--text-muted);">Tu carrito está vacío.</p>
-                <a href="tienda.html" class="btn btn-primary" style="margin-top: 24px; display: inline-flex; width: auto;">Ir a Comprar</a>
+                <a href="index.html" class="btn btn-primary" style="margin-top: 24px; display: inline-flex; width: auto;">Ir a Comprar</a>
             </div>
         `;
         actualizarTotales(0);
@@ -121,5 +121,5 @@ function finalizarCompra() {
     
     alert('¡Compra procesada con éxito! Gracias por confiar en La Última Maravilla.');
     localStorage.removeItem('miCarrito');
-    window.location.href = 'tienda.html';
+    window.location.href = 'index.html';
 }
