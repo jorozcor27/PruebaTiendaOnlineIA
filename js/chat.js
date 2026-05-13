@@ -66,16 +66,12 @@ async function sendMessage() {
             ).join('\n') : "No hay usuarios registrados.";
         }
 
-        // 4. Llamar a Gemini API
-        const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${GEMINI_API_KEY}`;
-        
-        const response = await fetch(geminiUrl, {
+        // 4. Llamar al Proxy Seguro de Vercel (en lugar de llamar a Google directamente)
+        const response = await fetch('/api/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                contents: [{
-                    parts: [{
-                        text: `Eres el Asistente Virtual experto de la tienda "La Última Maravilla". 
+                prompt: `Eres el Asistente Virtual experto de la tienda "La Última Maravilla". 
                         Responde de forma concisa e industrial.
                         
                         CONTEXTO TÉCNICO:
@@ -94,8 +90,6 @@ async function sendMessage() {
                         3. Si el usuario NO es ADMIN y pregunta por personal, informa que se requiere autorización nivel Admin.
                         
                         PREGUNTA DEL CLIENTE: ${text}`
-                    }]
-                }]
             })
         });
 
