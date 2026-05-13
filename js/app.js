@@ -2,11 +2,8 @@
  * Conexión del Frontend con Supabase
  */
 
-const SUPABASE_URL = "https://mrywnwlfwjuxsrjkxvpz.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1yeXdud2xmd2p1eHNyamt4dnB6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0MTA2OTMsImV4cCI6MjA5MTk4NjY5M30.yFeqG7nVp0l3grcVmdfFcwxIfShTe61MX75FAZjV4-k";
-
-// Inicializar cliente de Supabase (requiere que el script de CDN esté en el HTML)
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+// Inicializar cliente de Supabase usando el objeto CONFIG centralizado
+const supabaseClient = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY);
 
 // --- Sistema de Autenticación ---
 const loginForm = document.getElementById('loginForm');

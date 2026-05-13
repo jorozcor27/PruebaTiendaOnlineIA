@@ -3,7 +3,7 @@
  * Implementación final con seguridad por roles.
  */
 
-const GEMINI_API_KEY = "AIzaSyDmqTa5nMNlfPk856BURP-Md1E4JiIQTCQ";
+const GEMINI_API_KEY = CONFIG.GEMINI_API_KEY;
 
 function toggleChat() {
     const chatWindow = document.getElementById('chatWindow');

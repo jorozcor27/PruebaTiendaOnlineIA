@@ -27,3 +27,6 @@ yarn-error.log*
 dist/
 build/
 out/
+
+# App Secrets
+js/config.js
