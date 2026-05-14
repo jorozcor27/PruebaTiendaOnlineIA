@@ -38,27 +38,31 @@ if (loginForm) {
                 .eq('auth_id', authData.user.id)
                 .single();
 
-            if (userError) throw userError;
-
-            // Guardar datos en sesión local para acceso rápido en la UI
-            const rolNombre = userData.rol ? userData.rol.nombre : 'Desconocido';
-            const sessionUser = {
-                id: userData.id,
-                nombre: userData.nombre,
-                email: userData.email,
-                rol: rolNombre
-            };
-            localStorage.setItem('currentUser', JSON.stringify(sessionUser));
-
-            // 3. Redirección
-            // Todos los usuarios (Admin, Empleado, Cliente) entran directo a la tienda
-            window.location.href = 'index.html';
-        } catch (error) {
-            console.error('Error de autenticación:', error.message);
-            errorDiv.style.display = 'block';
-            errorDiv.textContent = 'Credenciales incorrectas o error de conexión.';
-            setTimeout(() => { errorDiv.style.display = 'none'; }, 3000);
+        if (userError) {
+            console.error("Perfil no encontrado:", userError);
+            throw new Error("Tu cuenta de autenticación existe, pero no tienes un perfil de usuario creado.");
         }
+
+        // Guardar datos en sesión local para acceso rápido en la UI
+        const sessionUser = {
+            id: userData.id,
+            nombre: userData.nombre,
+            email: userData.email,
+            rol: userData.rol ? userData.rol.nombre : 'Cliente'
+        };
+        localStorage.setItem('currentUser', JSON.stringify(sessionUser));
+
+        // 3. Redirección final
+        window.location.href = 'index.html';
+
+    } catch (error) {
+        console.warn('Detalle del error:', error);
+        errorDiv.style.display = 'block';
+        errorDiv.textContent = error.message === "Invalid login credentials" 
+            ? "Correo o contraseña incorrectos." 
+            : error.message;
+        setTimeout(() => { errorDiv.style.display = 'none'; }, 5000);
+    }
     });
 }
 
