@@ -57,6 +57,7 @@ function openModal(prod = null) {
         editMode = true;
         title.textContent = 'EDITAR PRODUCTO';
         document.getElementById('productId').value = prod.id;
+        document.getElementById('sku').value = prod.sku || '';
         document.getElementById('nombre').value = prod.nombre;
         document.getElementById('descripcion').value = prod.descripcion;
         document.getElementById('precio').value = prod.precio;
@@ -73,6 +74,7 @@ function openModal(prod = null) {
         editMode = false;
         title.textContent = 'NUEVO PRODUCTO';
         document.getElementById('productId').value = '';
+        document.getElementById('sku').value = '';
         document.getElementById('stock').value = 0;
         currentImageUrl = '';
         document.getElementById('btnUploadLocal').click();
@@ -114,6 +116,9 @@ async function renderTable() {
                 <td style="padding: 16px 24px;">
                     <img src="${prod.imagen_url || 'https://via.placeholder.com/60'}" 
                          style="width: 60px; height: 60px; object-fit: cover; border: 1px solid var(--outline-variant);">
+                </td>
+                <td style="padding: 16px 24px;">
+                    <span class="product-sku">${prod.sku || 'N/A'}</span>
                 </td>
                 <td style="padding: 16px 24px;">
                     <div style="font-weight: 700; color: var(--on-surface);">${prod.nombre}</div>
@@ -166,6 +171,7 @@ productForm.addEventListener('submit', async (e) => {
         submitBtn.textContent = 'PROCESANDO...';
 
         const id = document.getElementById('productId').value;
+        const sku = document.getElementById('sku').value.trim();
         const nombre = document.getElementById('nombre').value.trim();
         const descripcion = document.getElementById('descripcion').value.trim();
         const precio = parseFloat(document.getElementById('precio').value);
@@ -199,6 +205,7 @@ productForm.addEventListener('submit', async (e) => {
         }
 
         const productData = {
+            sku,
             nombre,
             descripcion,
             precio,

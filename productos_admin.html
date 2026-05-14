@@ -71,6 +71,7 @@
                     <thead style="background-color: var(--surface); border-bottom: 1px solid var(--outline-variant);">
                         <tr>
                             <th style="text-align: left; padding: 24px; font-family: var(--font-heading); font-size: 12px; letter-spacing: 0.1em; color: var(--on-surface-variant);">IMAGEN</th>
+                            <th style="text-align: left; padding: 24px; font-family: var(--font-heading); font-size: 12px; letter-spacing: 0.1em; color: var(--on-surface-variant);">CÓDIGO</th>
                             <th style="text-align: left; padding: 24px; font-family: var(--font-heading); font-size: 12px; letter-spacing: 0.1em; color: var(--on-surface-variant);">PRODUCTO</th>
                             <th style="text-align: left; padding: 24px; font-family: var(--font-heading); font-size: 12px; letter-spacing: 0.1em; color: var(--on-surface-variant);">CATEGORÍA</th>
                             <th style="text-align: left; padding: 24px; font-family: var(--font-heading); font-size: 12px; letter-spacing: 0.1em; color: var(--on-surface-variant);">STOCK</th>
@@ -96,9 +97,15 @@
             <form id="productForm">
                 <input type="hidden" id="productId">
                 
-                <div class="form-group">
-                    <label for="nombre">Nombre del Producto</label>
-                    <input type="text" id="nombre" class="form-control" placeholder="Ej. Pesas Rusas 16kg" required>
+                <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 24px;">
+                    <div class="form-group">
+                        <label for="sku">Código SKU</label>
+                        <input type="text" id="sku" class="form-control" placeholder="Ej. 101" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="nombre">Nombre del Producto</label>
+                        <input type="text" id="nombre" class="form-control" placeholder="Ej. Pesas Rusas 16kg" required>
+                    </div>
                 </div>
 
                 <div class="form-group">
