@@ -63,7 +63,7 @@ async function cargarCategorias() {
         if (error) throw error;
 
         const contenedorFiltros = document.getElementById('categoryFilters');
-        
+
         // Iteramos sobre las categorías devueltas y creamos un botón por cada una
         categorias.forEach(cat => {
             const btn = document.createElement('button');
@@ -75,7 +75,7 @@ async function cargarCategorias() {
                 document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
                 // Poner la clase 'active' al botón cliqueado
                 e.target.classList.add('active');
-                
+
                 filtrarProductos(cat.id);
             };
             contenedorFiltros.appendChild(btn);
@@ -109,7 +109,7 @@ async function cargarProductos() {
 
         // Guardamos los productos en memoria para poder filtrarlos rápido sin volver a llamar a la base de datos
         todosLosProductos = productos;
-        
+
         // Mostramos todos los productos inicialmente (sin filtro)
         filtrarProductos(null);
 
@@ -132,7 +132,7 @@ function renderizarProductos(productosFiltrados) {
     productosFiltrados.forEach(prod => {
         // Obtenemos el nombre de la categoría de forma segura
         const categoriaNombre = prod.categoria ? prod.categoria.nombre : 'Sin Categoría';
-        
+
         // Si no tiene imagen url, usamos un placeholder genérico
         const imageUrl = prod.imagen_url || 'https://via.placeholder.com/300x200?text=Sin+Imagen';
 
@@ -168,8 +168,8 @@ function filtrarProductos(categoriaId) {
         // Restaurar botón "Todas" como activo si se llama programáticamente
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
         const btnTodas = document.querySelector('.filter-btn');
-        if(btnTodas) btnTodas.classList.add('active');
-        
+        if (btnTodas) btnTodas.classList.add('active');
+
         renderizarProductos(todosLosProductos);
     } else {
         // Filtramos usando el ID de la categoría
@@ -197,10 +197,10 @@ function actualizarContadorCarrito() {
 // Esta función se ejecuta cuando el cliente hace clic en "+ Añadir" en un producto
 function agregarAlCarrito(id, nombre, precio) {
     let carrito = obtenerCarrito();
-    
+
     // Verificamos si el producto ya está en el carrito
     const itemExistente = carrito.find(item => item.id === id);
-    
+
     if (itemExistente) {
         // Si ya existe, simplemente le sumamos 1 a su cantidad
         itemExistente.cantidad += 1;
@@ -213,13 +213,13 @@ function agregarAlCarrito(id, nombre, precio) {
             cantidad: 1
         });
     }
-    
+
     // Guardamos el carrito actualizado nuevamente en el navegador
     localStorage.setItem('miCarrito', JSON.stringify(carrito));
-    
+
     // Actualizamos el contador visual en la bolita roja
     actualizarContadorCarrito();
-    
+
     // Feedback por VOZ
     if (typeof window.speakText === 'function') {
         window.speakText(`${nombre} añadido al carrito`);
@@ -273,7 +273,7 @@ document.addEventListener('DOMContentLoaded', () => {
 async function ejecutarBusqueda() {
     const query = document.getElementById('searchInput').value.trim();
     const productsGrid = document.getElementById('productsGrid');
-    
+
     if (query === '') {
         // Si está vacío, volvemos a cargar todos
         if (typeof cargarProductos === 'function') cargarProductos();
@@ -312,7 +312,7 @@ async function ejecutarBusqueda() {
 function initVoiceRecognition(btnId, inputId, callback) {
     const btn = document.getElementById(btnId);
     const input = document.getElementById(inputId);
-    
+
     // Compatibilidad multiplataforma
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
@@ -348,7 +348,7 @@ function initVoiceRecognition(btnId, inputId, callback) {
     recognition.onerror = (event) => {
         btn.classList.remove('recording');
         console.error("Error en reconocimiento de voz:", event.error);
-        
+
         if (event.error === 'not-allowed') {
             alert("Acceso al micrófono denegado. Por favor, activa los permisos en tu navegador.");
         } else if (event.error === 'network') {
@@ -377,10 +377,10 @@ function procesarComandoVoz(texto) {
         // Obtenemos el grupo que haya capturado el número
         const skuEncontrado = (match[1] || match[2]).trim();
         console.log("Comando detectado correctamente. Buscando SKU:", skuEncontrado);
-        
+
         // Buscar el producto en nuestro arreglo global (asegurando comparación de strings)
         const producto = todosLosProductos.find(p => String(p.sku).trim() === String(skuEncontrado));
-        
+
         if (producto) {
             agregarAlCarrito(producto.id, producto.nombre, producto.precio);
         } else {
@@ -389,7 +389,7 @@ function procesarComandoVoz(texto) {
         // Limpiar el input después de procesar el comando
         const searchInput = document.getElementById('searchInput');
         if (searchInput) searchInput.value = '';
-        
+
         return true; // Comando procesado
     }
 
@@ -412,7 +412,7 @@ function procesarComandoVoz(texto) {
         if (searchInput) searchInput.value = '';
         return true;
     }
-    
+
     return false; // No era un comando especial
 }
 
@@ -436,7 +436,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initVoiceRecognition('voiceSearchBtn', 'searchInput', (texto) => {
         // Primero intentamos procesar como comando
         const esComando = procesarComandoVoz(texto);
-        
+
         // Si no es comando, ejecutamos la búsqueda normal
         if (!esComando) {
             ejecutarBusqueda();
