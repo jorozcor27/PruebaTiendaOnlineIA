@@ -368,30 +368,59 @@ function procesarComandoVoz(texto) {
     const comando = texto.toLowerCase();
     console.log("Procesando comando:", comando);
 
-    // Patrón flexible: "código [X] al carrito", "codigo [X]", "añadir codigo [X]", etc.
-    // Soporta: código/codigo, añadir/agregar/poner, al carrito/a la cesta
-    const regexCodigo = /(?:código|codigo)\s+(\d+)(?:\s+al\s+carrito|\s+a\s+la\s+cesta)?|(?:añadir|agregar|poner)\s+(?:código|codigo)\s+(\d+)/i;
+    // Regex flexible: acepta "añadir 101", "código 101", "pon el 101", etc.
+    const regexCodigo = /(?:código|codigo|añadir|agregar|poner|pon|el)\s+(\d+)/i;
     const match = comando.match(regexCodigo);
 
     if (match) {
-        // Obtenemos el grupo que haya capturado el número
-        const skuEncontrado = (match[1] || match[2]).trim();
-        console.log("Comando detectado correctamente. Buscando SKU:", skuEncontrado);
-
-        // Buscar el producto en nuestro arreglo global (asegurando comparación de strings)
+        const skuEncontrado = match[1].trim();
+        console.log("Buscando producto con SKU:", skuEncontrado);
+        
+        // Buscar el producto en nuestro arreglo global
         const producto = todosLosProductos.find(p => String(p.sku).trim() === String(skuEncontrado));
-
+        
         if (producto) {
+            // 1. Añadir al carrito
             agregarAlCarrito(producto.id, producto.nombre, producto.precio);
+            
+            // 2. Feedback por voz
+            const msg = `Añadido ${producto.nombre} al carrito`;
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(msg);
+                utterance.lang = 'es-ES';
+                window.speechSynthesis.speak(utterance);
+            }
+            
+            // 3. Feedback visual (Notificación)
+            mostrarNotificacion(msg, 'success');
+            return true; 
         } else {
-            mostrarModalError(`No se encontró el código: ${skuEncontrado}`);
+            const msgError = `No encontré el producto ${skuEncontrado}`;
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.speak(new SpeechSynthesisUtterance(msgError));
+            }
+            mostrarNotificacion(msgError, 'error');
+            return true;
         }
-        // Limpiar el input después de procesar el comando
-        const searchInput = document.getElementById('searchInput');
-        if (searchInput) searchInput.value = '';
-
-        return true; // Comando procesado
     }
+    return false;
+}
+
+// Función para mostrar avisos en pantalla
+function mostrarNotificacion(mensaje, tipo) {
+    const toast = document.createElement('div');
+    toast.style = `
+        position: fixed; top: 100px; right: 20px; 
+        background: ${tipo === 'success' ? '#0f172a' : '#ba1a1a'};
+        color: white; padding: 16px 24px; z-index: 10001;
+        font-family: var(--font-heading); font-weight: 700;
+        border: 1px solid rgba(255,255,255,0.2);
+        animation: fadeIn 0.3s ease-out;
+    `;
+    toast.textContent = mensaje.toUpperCase();
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+}
 
     // Nuevo Comando: "para", "detente", "stop", "silencio"
     if (['para', 'detente', 'stop', 'silencio'].some(c => comando.includes(c))) {
