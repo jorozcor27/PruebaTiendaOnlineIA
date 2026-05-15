@@ -460,19 +460,23 @@ function mostrarModalError(mensaje) {
     setTimeout(() => { document.getElementById('errorModal')?.remove(); }, 3000);
 }
 
-// Inicializar voz en la tienda
+// Inicializar tienda al cargar la página
 document.addEventListener('DOMContentLoaded', () => {
-    initVoiceRecognition('voiceSearchBtn', 'searchInput', (texto) => {
-        // Primero intentamos procesar como comando
-        const esComando = procesarComandoVoz(texto);
+    // 1. Cargar datos e interfaz inicial
+    actualizarInterfazUsuario();
+    cargarCategorias();
+    cargarProductos();
+    actualizarContadorCarrito();
 
-        // Si no es comando, ejecutamos la búsqueda normal
+    // 2. Configurar reconocimiento de voz
+    initVoiceRecognition('voiceSearchBtn', 'searchInput', (texto) => {
+        const esComando = procesarComandoVoz(texto);
         if (!esComando) {
             ejecutarBusqueda();
         }
     });
 
-    // Escuchar Enter en el buscador
+    // 3. Escuchar Enter en el buscador
     document.getElementById('searchInput')?.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') ejecutarBusqueda();
     });
