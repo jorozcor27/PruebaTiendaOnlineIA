@@ -364,48 +364,6 @@ function initVoiceRecognition(btnId, inputId, callback) {
 
 // --- PROCESAMIENTO DE COMANDOS DE VOZ ---
 
-function procesarComandoVoz(texto) {
-    const comando = texto.toLowerCase();
-    console.log("Procesando comando:", comando);
-
-    // Regex flexible: acepta "añadir 101", "código 101", "pon el 101", etc.
-    const regexCodigo = /(?:código|codigo|llevar|añadir|agregar|poner|pon|el|producto)\s+(\d+)/i;
-    const match = comando.match(regexCodigo);
-
-    if (match) {
-        const skuEncontrado = match[1].trim();
-        console.log("Buscando producto con SKU:", skuEncontrado);
-
-        // Buscar el producto en nuestro arreglo global
-        const producto = todosLosProductos.find(p => String(p.sku).trim() === String(skuEncontrado));
-
-        if (producto) {
-            // 1. Añadir al carrito
-            agregarAlCarrito(producto.id, producto.nombre, producto.precio);
-
-            // 2. Feedback por voz
-            const msg = `Añadido ${producto.nombre} al carrito`;
-            if ('speechSynthesis' in window) {
-                const utterance = new SpeechSynthesisUtterance(msg);
-                utterance.lang = 'es-ES';
-                window.speechSynthesis.speak(utterance);
-            }
-
-            // 3. Feedback visual (Notificación)
-            mostrarNotificacion(msg, 'success');
-            return true;
-        } else {
-            const msgError = `No encontré el producto ${skuEncontrado}`;
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.speak(new SpeechSynthesisUtterance(msgError));
-            }
-            mostrarNotificacion(msgError, 'error');
-            return true;
-        }
-    }
-    return false;
-}
-
 // Función para mostrar avisos en pantalla
 function mostrarNotificacion(mensaje, tipo) {
     const toast = document.createElement('div');
@@ -422,27 +380,49 @@ function mostrarNotificacion(mensaje, tipo) {
     setTimeout(() => toast.remove(), 3000);
 }
 
-// Nuevo Comando: "para", "detente", "stop", "silencio"
-if (['para', 'detente', 'stop', 'silencio'].some(c => comando.includes(c))) {
-    console.log("Comando de parada detectado.");
-    if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
+function procesarComandoVoz(texto) {
+    const comando = texto.toLowerCase();
+    console.log("Procesando comando:", comando);
+
+    // 1. Regex flexible: acepta "añadir 101", "código 101", "pon el 101", etc.
+    const regexCodigo = /(?:código|codigo|llevar|añadir|agregar|poner|pon|el|producto)\s+(\d+)/i;
+    const match = comando.match(regexCodigo);
+
+    if (match) {
+        const skuEncontrado = match[1].trim();
+        const producto = todosLosProductos.find(p => String(p.sku).trim() === String(skuEncontrado));
+        
+        if (producto) {
+            agregarAlCarrito(producto.id, producto.nombre, producto.precio);
+            const msg = `Añadido ${producto.nombre} al carrito`;
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.speak(new SpeechSynthesisUtterance(msg));
+            }
+            mostrarNotificacion(msg, 'success');
+            return true; 
+        } else {
+            const msgError = `No encontré el producto ${skuEncontrado}`;
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.speak(new SpeechSynthesisUtterance(msgError));
+            }
+            mostrarNotificacion(msgError, 'error');
+            return true;
+        }
     }
-    const searchInput = document.getElementById('searchInput');
-    if (searchInput) searchInput.value = '';
-    return true;
-}
 
-// Nuevo Comando: "todos los productos" o "todos"
-if (comando === 'todos los productos' || comando === 'todos' || comando === 'ver todos') {
-    console.log("Reseteando catálogo...");
-    cargarProductos();
-    const searchInput = document.getElementById('searchInput');
-    if (searchInput) searchInput.value = '';
-    return true;
-}
+    // 2. Comandos de parada: "para", "detente", "stop", "silencio"
+    if (['para', 'detente', 'stop', 'silencio'].some(c => comando.includes(c))) {
+        if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+        return true;
+    }
 
-return false; // No era un comando especial
+    // 3. Comando: "todos los productos"
+    if (comando === 'todos los productos' || comando === 'todos' || comando === 'ver todos') {
+        cargarProductos();
+        return true;
+    }
+
+    return false; // No era un comando especial
 }
 
 function mostrarModalError(mensaje) {
