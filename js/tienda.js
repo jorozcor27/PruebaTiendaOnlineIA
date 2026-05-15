@@ -220,9 +220,12 @@ function agregarAlCarrito(id, nombre, precio) {
     // Actualizamos el contador visual en la bolita roja
     actualizarContadorCarrito();
 
-    // Feedback por VOZ
-    if (typeof window.speakText === 'function') {
-        window.speakText(`${nombre} añadido al carrito`);
+    // Feedback por VOZ UNIFICADO (Forzado en español)
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel(); // Detener cualquier audio previo
+        const utterance = new SpeechSynthesisUtterance(`${nombre} añadido`);
+        utterance.lang = 'es-ES';
+        window.speechSynthesis.speak(utterance);
     }
 
     // Feedback visual con Modal de éxito (en lugar de alert)
@@ -394,11 +397,7 @@ function procesarComandoVoz(texto) {
         
         if (producto) {
             agregarAlCarrito(producto.id, producto.nombre, producto.precio);
-            const msg = `Añadido ${producto.nombre} al carrito`;
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.speak(new SpeechSynthesisUtterance(msg));
-            }
-            mostrarNotificacion(msg, 'success');
+            mostrarNotificacion(`Añadido ${producto.nombre}`, 'success');
             return true; 
         } else {
             const msgError = `No encontré el producto ${skuEncontrado}`;
